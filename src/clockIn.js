@@ -58,7 +58,7 @@ async function clockIn(today) {
     writeLog("Iniciando o Selenium WebDriver...");
 
     const options = new Options();
-    //options.addArguments("--headless"); -- executa sem interface gráfica
+    //options.addArguments("--headless"); // executa sem interface gráfica
     options.addArguments("--disable-gpu");
     options.addArguments("--no-sandbox");
 
@@ -78,6 +78,8 @@ async function clockIn(today) {
     writeLog("Login realizado.");
 
     await driver.sleep(5000);
+
+    // Primeiro botão: verificando e clicando
     const firstButton = await driver.wait(
       until.elementLocated(
         By.xpath(
@@ -86,9 +88,14 @@ async function clockIn(today) {
       ),
       5000
     );
-    await firstButton.click();
+    await driver.executeScript(
+      "arguments[0].scrollIntoView(true);",
+      firstButton
+    );
+    await driver.executeScript("arguments[0].click();", firstButton);
     writeLog("Primeiro botão de registro de ponto clicado.");
 
+    // Segundo botão: verificando e clicando
     const secondButton = await driver.wait(
       until.elementLocated(
         By.xpath(
@@ -97,7 +104,11 @@ async function clockIn(today) {
       ),
       5000
     );
-    await secondButton.click();
+    await driver.executeScript(
+      "arguments[0].scrollIntoView(true);",
+      secondButton
+    );
+    await driver.executeScript("arguments[0].click();", secondButton);
     writeLog("Segundo botão de registro de ponto clicado.");
 
     const successMessage = `Ponto registrado com sucesso em ${currentTime}`;
