@@ -16,7 +16,11 @@ function logCheckTime(checkTime) {
 
 function deleteLogTimesIfNeeded() {
   const now = new Date();
-  if (now.getHours() === 19 && fs.existsSync(timeCheckLogPath)) {
+  if (
+    now.getHours() === 18 &&
+    now.getMinutes() === 9 &&
+    fs.existsSync(timeCheckLogPath)
+  ) {
     try {
       fs.unlinkSync(timeCheckLogPath);
       console.log("Arquivo log-times.txt excluído às 19h.");
