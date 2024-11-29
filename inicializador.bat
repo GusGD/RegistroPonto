@@ -15,8 +15,14 @@ start /min "" node index.js
 
 echo O script Node.js está em execução.
 
-echo Aguardando interrupção. Pressione Ctrl+C para parar...
-
 :loop
+for /f "tokens=1-2 delims=:" %%h in ("%time%") do set horaAtual=%%h:%%i
+
+if "%horaAtual%" geq "18:10" (
+    echo Encerrando o script Node.js às %horaAtual%...
+    taskkill /f /im node.exe >nul 2>&1
+    exit /b
+)
+
 timeout /t 60 >nul
 goto loop
