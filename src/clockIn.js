@@ -5,6 +5,7 @@ const { logCheckTime, writeLog } = require("./logger");
 const { Builder, By, until } = require("selenium-webdriver");
 const { Options } = require("selenium-webdriver/chrome");
 const { format } = require("date-fns");
+const { isWeekend, isHoliday } = require("./utils");
 
 function getAllowedTimes() {
   try {
@@ -23,31 +24,21 @@ function getAllowedTimes() {
   }
 }
 
-function isWeekend(date) {
-  const day = date.getDay();
-  return day === 0 || day === 6;
-}
-
-function isHoliday(date) {
-  const holidays = ["01-01", "25-12"];
-  const dateStr = format(date, "dd-MM");
-  return holidays.includes(dateStr);
-}
-
 const allowedTimes = getAllowedTimes();
 
 async function clockIn(today) {
-  if (isWeekend(today) || isHoliday(today)) {
+  const date = new Date(today);
+  if (isWeekend(date) || isHoliday(date)) {
     const msg = "Hoje é fim de semana ou feriado. Ponto não registrado.";
     console.log(msg);
     writeLog(msg);
+    process.exit(0);
     return;
   }
 
-  const currentTime = format(today, "HH:mm");
+  const currentTime = format(date, "HH:mm");
   if (!allowedTimes.includes(currentTime)) {
     const msg = `Horário atual (${currentTime}) não está nos horários permitidos. Ponto não registrado.`;
-    console.log(msg);
     logCheckTime(msg);
     return;
   }
@@ -79,7 +70,6 @@ async function clockIn(today) {
 
     await driver.sleep(5000);
 
-    // Primeiro botão: verificando e clicando
     const firstButton = await driver.wait(
       until.elementLocated(
         By.xpath(
@@ -95,7 +85,6 @@ async function clockIn(today) {
     await driver.executeScript("arguments[0].click();", firstButton);
     writeLog("Primeiro botão de registro de ponto clicado.");
 
-    // Segundo botão: verificando e clicando
     const secondButton = await driver.wait(
       until.elementLocated(
         By.xpath(
