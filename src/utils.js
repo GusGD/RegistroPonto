@@ -6,7 +6,7 @@ function isWeekend(date) {
 }
 
 function isHoliday(date) {
-  const holidays = ["01-01", "25-12", "29-11"];
+  const holidays = ["01-01", "25-12"];
   const dateStr = format(date, "dd-MM");
   return holidays.includes(dateStr);
 }

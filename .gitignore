@@ -1,6 +1,4 @@
+logs/
 node_modules
 .env
 package-lock.json
-logs
-log-times.txt
-log.txt
