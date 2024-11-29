@@ -68,7 +68,7 @@ async function clockIn(today) {
       .build();
     console.log("WebDriver iniciado.");
 
-    await driver.get("https://www.rhid.com.br/v2/");
+    await driver.get(process.env.URL);
     writeLog("Acessando o site...");
 
     await driver.wait(until.elementLocated(By.id("email")), 10000);

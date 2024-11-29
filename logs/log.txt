@@ -1,0 +1,6 @@
+2024-11-29T02:03:19.457Z - Iniciando o Selenium WebDriver...
+2024-11-29T02:03:23.971Z - Acessando o site...
+2024-11-29T02:03:24.562Z - Login realizado.
+2024-11-29T02:03:29.677Z - Primeiro botão de registro de ponto clicado.
+2024-11-29T02:03:29.683Z - Erro ao bater o ponto: invalid argument: 'value' must be a string
+  (Session info: chrome=131.0.6778.86)
