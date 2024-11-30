@@ -32,6 +32,7 @@ function deleteLogTimesIfNeeded() {
     } catch (err) {
       writeLog(`Erro ao excluir log-times.txt: ${err.message}`);
     }
+    process.exit(0);
   }
 }
 
