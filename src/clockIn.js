@@ -80,6 +80,7 @@ export async function clockIn(today) {
       "arguments[0].scrollIntoView(true);",
       secondButton
     );
+    await driver.executeScript("arguments[0].click();", secondButton);
     writeLog("Segundo botão de registro de ponto clicado.");
 
     const successMessage = `Ponto registrado com sucesso em ${currentTime}`;
