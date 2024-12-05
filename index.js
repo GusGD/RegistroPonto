@@ -23,4 +23,4 @@ async function checkAndClockIn() {
 }
 
 console.log("Script de ponto iniciado às: " + format(new Date(), "HH:mm:ss"));
-setInterval(checkAndClockIn, 60 * 100);
+setInterval(checkAndClockIn, 60 * 1000);
