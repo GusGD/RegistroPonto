@@ -1,42 +1,26 @@
-require("dotenv").config();
-const fs = require("fs");
-const path = require("path");
-const { logCheckTime, writeLog } = require("./logger");
-const { Builder, By, until } = require("selenium-webdriver");
-const { Options } = require("selenium-webdriver/chrome");
-const { format } = require("date-fns");
-const { isWeekend, isHoliday } = require("./utils");
+import { Builder, By, until } from "selenium-webdriver";
+import { Options } from "selenium-webdriver/chrome.js";
 
-function getAllowedTimes() {
-  try {
-    const data = fs.readFileSync(
-      path.join(__dirname, "allowedTimes.json"),
-      "utf8"
-    );
-    const json = JSON.parse(data);
-    return json.allowedTimes || [];
-  } catch (err) {
-    console.error(
-      "Erro ao ler ou analisar o arquivo allowedTimes.json:",
-      err.message
-    );
-    return [];
-  }
-}
+import { isWeekend, isHoliday } from "./utils.js";
+import { format } from "date-fns";
+import { writeLog, logCheckTime } from "./logger.js";
 
-const allowedTimes = getAllowedTimes();
-
-async function clockIn(today) {
+export async function clockIn(today) {
   const date = new Date(today);
-  if (isWeekend(date) || isHoliday(date)) {
+  const year = date.getFullYear();
+
+  const holidays = await isHoliday(date);
+
+  if (isWeekend(date) || holidays.includes(format(date, "yyyy-MM-dd"))) {
     const msg = "Hoje é fim de semana ou feriado. Ponto não registrado.";
     console.log(msg);
     writeLog(msg);
     process.exit(0);
-    return;
   }
 
+  const allowedTimes = "./allowedTimes.json";
   const currentTime = format(date, "HH:mm");
+
   if (!allowedTimes.includes(currentTime)) {
     const msg = `Horário atual (${currentTime}) não está nos horários permitidos. Ponto não registrado.`;
     logCheckTime(msg);
@@ -49,7 +33,6 @@ async function clockIn(today) {
     writeLog("Iniciando o Selenium WebDriver...");
 
     const options = new Options();
-    //options.addArguments("--headless"); // executa sem interface gráfica
     options.addArguments("--disable-gpu");
     options.addArguments("--no-sandbox");
 
@@ -97,21 +80,18 @@ async function clockIn(today) {
       "arguments[0].scrollIntoView(true);",
       secondButton
     );
-    await driver.executeScript("arguments[0].click();", secondButton);
     writeLog("Segundo botão de registro de ponto clicado.");
 
     const successMessage = `Ponto registrado com sucesso em ${currentTime}`;
-    console.log(successMessage);
     writeLog(successMessage);
+    console.log(successMessage);
   } catch (err) {
     const errorMessage = `Erro ao bater o ponto: ${err.message}`;
-    console.error(errorMessage);
     writeLog(errorMessage);
+    console.error(errorMessage);
   } finally {
     if (driver) {
       await driver.quit();
     }
   }
 }
-
-module.exports = { clockIn };
