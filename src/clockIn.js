@@ -4,6 +4,7 @@ import { Options } from "selenium-webdriver/chrome.js";
 import { isWeekend, isHoliday } from "./utils.js";
 import { format } from "date-fns";
 import { writeLog, logCheckTime } from "./logger.js";
+import fs from "fs/promises";
 
 export async function clockIn(today) {
   const date = new Date(today);
@@ -15,11 +16,23 @@ export async function clockIn(today) {
     const msg = "Hoje é fim de semana ou feriado. Ponto não registrado.";
     console.log(msg);
     writeLog(msg);
-    process.exit(0);
+    return;
   }
 
-  const allowedTimes = "./allowedTimes.json";
   const currentTime = format(date, "HH:mm");
+
+  let allowedTimes;
+  try {
+    const allowedTimesContent = await fs.readFile(
+      "./src/allowedTimes.json",
+      "utf-8"
+    );
+    allowedTimes = JSON.parse(allowedTimesContent).allowedTimes;
+  } catch (err) {
+    console.error("Erro ao carregar allowedTimes.json:", err.message);
+    writeLog("Erro ao carregar allowedTimes.json.");
+    return;
+  }
 
   if (!allowedTimes.includes(currentTime)) {
     const msg = `Horário atual (${currentTime}) não está nos horários permitidos. Ponto não registrado.`;
