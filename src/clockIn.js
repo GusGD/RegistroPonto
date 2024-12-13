@@ -1,6 +1,5 @@
 import { Builder, By, until } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/chrome.js";
-
 import { isWeekend, isHoliday } from "./utils.js";
 import { format } from "date-fns";
 import { writeLog, logCheckTime } from "./logger.js";
@@ -8,15 +7,13 @@ import fs from "fs/promises";
 
 export async function clockIn(today) {
   const date = new Date(today);
-  const year = date.getFullYear();
 
   const holidays = await isHoliday(date);
 
   if (isWeekend(date) || holidays.includes(format(date, "yyyy-MM-dd"))) {
     const msg = "Hoje é fim de semana ou feriado. Ponto não registrado.";
-    console.log(msg);
     writeLog(msg);
-    return;
+    process.exit(0);
   }
 
   const currentTime = format(date, "HH:mm");
